@@ -3,270 +3,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="SecureScanX Enterprise - Advanced Threat Detection Dashboard">
-<title>SecureScanX Enterprise</title>
-
+<title>RX Threat Dashboard</title>
 <style>
 :root{
-  --primary:#4f9cff;
-  --primary-dark:#2563eb;
-  --bg1:#0f2027;
-  --bg2:#203a43;
-  --bg3:#2c5364;
+  --primary:#22c55e;
+  --primary-dark:#16a34a;
+  --bg:#0f172a;
+  --card-bg:#1e293b;
+  --text:#e2e8f0;
   --safe:#4ade80;
-  --risk:#f87171;
+  --risk:#ef4444;
 }
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Segoe UI',sans-serif;
-}
-
-body{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
-  color:#fff;
-}
-
-main{
-  width:95%;
-  max-width:820px;
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(20px);
-  border-radius:22px;
-  padding:40px;
-  box-shadow:0 25px 60px rgba(0,0,0,0.5);
-}
-
-header{
-  text-align:center;
-  margin-bottom:30px;
-}
-
-header p{
-  opacity:0.7;
-  margin-top:6px;
-}
-
-.stats{
-  display:flex;
-  gap:15px;
-  margin:25px 0;
-}
-
-.stat-box{
-  flex:1;
-  background:rgba(255,255,255,0.1);
-  padding:18px;
-  border-radius:16px;
-  text-align:center;
-}
-
-.stat-box h3{
-  font-size:13px;
-  opacity:0.7;
-}
-
-.stat-box p{
-  font-size:20px;
-  font-weight:600;
-  margin-top:6px;
-}
-
-.tabs{
-  display:flex;
-  gap:25px;
-  margin:20px 0;
-}
-
-.tab{
-  cursor:pointer;
-  opacity:0.6;
-  padding-bottom:5px;
-}
-
-.tab.active{
-  opacity:1;
-  border-bottom:2px solid var(--primary);
-}
-
-input{
-  width:100%;
-  padding:13px;
-  border-radius:12px;
-  border:none;
-  margin-bottom:15px;
-}
-
-button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  background:linear-gradient(90deg,var(--primary),var(--primary-dark));
-  color:white;
-  font-weight:600;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-button:disabled{
-  opacity:0.6;
-  cursor:not-allowed;
-}
-
-button:hover:not(:disabled){
-  transform:translateY(-3px);
-  box-shadow:0 10px 25px rgba(79,156,255,0.4);
-}
-
-.progress-container{
-  width:100%;
-  height:8px;
-  background:rgba(255,255,255,0.2);
-  border-radius:10px;
-  overflow:hidden;
-  margin-top:18px;
-  display:none;
-}
-
-.progress-bar{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,var(--primary),var(--primary-dark));
-  transition:width 0.12s linear;
-}
-
-.result{
-  margin-top:18px;
-  font-weight:600;
-  min-height:22px;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:var(--bg);color:var(--text);display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:20px;}
+.container{max-width:800px;width:100%;background:var(--card-bg);border-radius:16px;padding:30px;box-shadow:0 10px 25px rgba(0,0,0,0.5);}
+h1{text-align:center;margin-bottom:20px;}
+footer{text-align:center;color:#aaa;margin-top:20px;font-size:13px;}
+input[type="text"],input[type="file"]{width:100%;padding:12px;margin-bottom:15px;border-radius:10px;border:none;background:#0f172a;color:#fff;}
+button{width:100%;padding:14px;border:none;border-radius:12px;background:var(--primary);color:#fff;font-weight:600;cursor:pointer;transition:0.3s;}
+button:disabled{opacity:0.6;cursor:not-allowed;}
+button:hover:not(:disabled){background:var(--primary-dark);}
+.progress-container{width:100%;height:8px;background:#0f172a;border-radius:8px;overflow:hidden;margin-top:15px;display:none;}
+.progress-bar{height:100%;width:0%;background:var(--primary);transition:0.15s linear;}
+.result{margin-top:15px;font-weight:600;min-height:22px;}
 .safe{color:var(--safe);}
 .risk{color:var(--risk);}
-
-@media(max-width:600px){
-  .stats{flex-direction:column;}
-}
 </style>
 </head>
-
 <body>
+<div class="container">
+<h1>RX Threat Dashboard</h1>
 
-<main>
-  <header>
-    <h1>SecureScanX Enterprise</h1>
-    <p>Advanced Threat Detection & Analysis</p>
-  </header>
+<!-- URL Scan -->
+<input type="text" id="urlInput" placeholder="Enter URL to scan">
 
-  <section class="stats">
-    <div class="stat-box">
-      <h3>Total Scans</h3>
-      <p id="totalCount">0</p>
-    </div>
-    <div class="stat-box">
-      <h3>High Risk</h3>
-      <p id="riskCount">0</p>
-    </div>
-    <div class="stat-box">
-      <h3>Safe</h3>
-      <p id="safeCount">0</p>
-    </div>
-  </section>
+<div style="text-align:center;margin:10px 0;">OR</div>
 
-  <section>
-    <input id="scanInput" type="text" placeholder="Enter file name, URL, or IP address" aria-label="Scan Input">
-    <button id="scanBtn">Run Security Scan</button>
+<!-- File Scan -->
+<input type="file" id="fileInput">
 
-    <div class="progress-container" id="progressBox">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
+<button id="scanBtn">Run Scan</button>
 
-    <div class="result" id="resultText" role="status" aria-live="polite"></div>
-  </section>
-</main>
+<div class="progress-container" id="progressBox">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<div class="result" id="resultText"></div>
+
+<footer>Powered by kalsNotDev 🖐</footer>
+</div>
 
 <script>
-const totalCount=document.getElementById("totalCount");
-const riskCount=document.getElementById("riskCount");
-const safeCount=document.getElementById("safeCount");
-const progressBox=document.getElementById("progressBox");
-const progressBar=document.getElementById("progressBar");
-const resultText=document.getElementById("resultText");
-const scanBtn=document.getElementById("scanBtn");
-const scanInput=document.getElementById("scanInput");
+const scanBtn = document.getElementById("scanBtn");
+const urlInput = document.getElementById("urlInput");
+const fileInput = document.getElementById("fileInput");
+const progressBox = document.getElementById("progressBox");
+const progressBar = document.getElementById("progressBar");
+const resultText = document.getElementById("resultText");
 
-let stats=JSON.parse(localStorage.getItem("scanStats"))||{
-  total:0,
-  risk:0,
-  safe:0
-};
+// Ganti ini dengan URL backend Render lu
+const API_BASE = "https://rx-threat-backend.onrender.com";
 
-updateUI();
+scanBtn.addEventListener("click", runScan);
+urlInput.addEventListener("keypress", e => { if(e.key === "Enter") runScan(); });
 
-scanBtn.addEventListener("click",runScan);
-scanInput.addEventListener("keypress",e=>{
-  if(e.key==="Enter") runScan();
-});
+async function runScan() {
+  scanBtn.disabled = true;
+  resultText.textContent = "Scanning...";
+  resultText.className = "result";
+  progressBox.style.display = "block";
+  progressBar.style.width = "0%";
 
-function runScan(){
-  const value=scanInput.value.trim();
-  if(!value){
-    resultText.textContent="Please enter valid input.";
-    resultText.className="result risk";
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += 5;
+    progressBar.style.width = progress + "%";
+    if(progress >= 100) { clearInterval(interval); finishScan(); }
+  }, 80);
+}
+
+async function finishScan() {
+  let data;
+  try {
+    if(fileInput.files[0]){
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      const res = await fetch(API_BASE + "/scan-file", { method:"POST", body: formData });
+      data = await res.json();
+    } else {
+      const res = await fetch(API_BASE + "/scan-url", {
+        method:"POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ url: urlInput.value })
+      });
+      data = await res.json();
+    }
+  } catch(err) {
+    resultText.textContent = "Scan failed!";
+    resultText.className = "result risk";
+    scanBtn.disabled = false;
     return;
   }
 
-  scanBtn.disabled=true;
-  progressBox.style.display="block";
-  progressBar.style.width="0%";
-  resultText.textContent="Scanning...";
-  resultText.className="result";
-
-  let progress=0;
-
-  const interval=setInterval(()=>{
-    progress+=4;
-    progressBar.style.width=progress+"%";
-
-    if(progress>=100){
-      clearInterval(interval);
-      finishScan();
-    }
-  },50);
-}
-
-function finishScan(){
-  stats.total++;
-
-  if(Math.random()>0.5){
-    stats.risk++;
-    resultText.textContent="⚠ High Risk Threat Detected!";
-    resultText.classList.add("risk");
-  }else{
-    stats.safe++;
-    resultText.textContent="✓ No Threat Found. System Safe.";
-    resultText.classList.add("safe");
+  // Demo hasil threat (kalau API aktif bisa diganti dengan data nyata)
+  const threat = Math.random() > 0.5 ? 1 : 0;
+  if(threat){
+    resultText.textContent = "⚠ High Risk Threat Detected!";
+    resultText.className = "result risk";
+  } else {
+    resultText.textContent = "✓ No Threat Found. System Safe.";
+    resultText.className = "result safe";
   }
-
-  localStorage.setItem("scanStats",JSON.stringify(stats));
-  updateUI();
-
-  scanBtn.disabled=false;
-}
-
-function updateUI(){
-  totalCount.textContent=stats.total;
-  riskCount.textContent=stats.risk;
-  safeCount.textContent=stats.safe;
+  scanBtn.disabled = false;
 }
 </script>
-
 </body>
-  </html>
+</html>
